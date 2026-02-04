@@ -2,7 +2,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FeedbackResponse } from "./types";
 
-const API_KEY = process.env.API_KEY || "";
+// Vo Vite prostredí pristupujeme k premenným cez import.meta.env
+const API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY || (process.env as any).API_KEY || "";
 
 export const getLanguageFeedback = async (
   targetWords: string,
