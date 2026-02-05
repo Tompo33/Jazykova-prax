@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { FeedbackResponse } from "./types";
 
@@ -5,9 +6,15 @@ export const getLanguageFeedback = async (
   targetWords: string,
   userSentences: string
 ): Promise<FeedbackResponse> => {
-  // Use the API key exclusively from process.env.API_KEY as per guidelines.
-  // This fix addresses the 'Property env does not exist on type ImportMeta' error by removing Vite-specific environment access.
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // Načítanie API kľúča z Vite prostredia (import.meta.env) s fallbackom na process.env
+  const apiKey = (import.meta as any).env?.VITE_GEMINI_API_KEY || process.env.API_KEY;
+
+  if (!apiKey) {
+    console.error('Kľúč VITE_GEMINI_API_KEY nebol nájdený v prostredí!');
+  }
+
+  // Inicializácia prebieha až tu (pri zavolaní funkcie po kliknutí na tlačidlo)
+  const ai = new GoogleGenAI({ apiKey: apiKey || "" });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
@@ -31,7 +38,10 @@ export const getLanguageFeedback = async (
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          summary: { type: Type.STRING },
+          summary: { 
+            type: Type.STRING, 
+            description: "Krátke, povzbudivé zhrnutie v slovenčine (neformálne, ženský rod)." 
+          },
           corrections: {
             type: Type.ARRAY,
             items: {
@@ -40,8 +50,8 @@ export const getLanguageFeedback = async (
                 originalSentence: { type: Type.STRING },
                 wordPracticed: { type: Type.STRING },
                 isCorrect: { type: Type.BOOLEAN },
-                feedback: { type: Type.STRING },
-                explanation: { type: Type.STRING },
+                feedback: { type: Type.STRING, description: "Detailná spätná väzba v slovenčine." },
+                explanation: { type: Type.STRING, description: "Lingvistické vysvetlenie v slovenčine." },
                 suggestion: { type: Type.STRING },
                 correctExample: { type: Type.STRING }
               },

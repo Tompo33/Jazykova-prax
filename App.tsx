@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { getLanguageFeedback } from './geminiService';
 import { FeedbackResponse } from './types';
@@ -26,12 +27,14 @@ const App: React.FC = () => {
     setFeedback(null);
 
     try {
+      // Celá funkcia je zabalená v try-catch bloku pre stabilitu
       const result = await getLanguageFeedback(targetWords, userSentences);
       setFeedback(result);
     } catch (err: any) {
       console.error("Chyba pri volaní API:", err);
       
       const errorMessage = err?.message || "";
+      // Kontrola statusov 420 / 429
       const status = err?.status || (errorMessage.includes("420") ? 420 : errorMessage.includes("429") ? 429 : null);
 
       if (status === 420 || status === 429) {
@@ -51,7 +54,7 @@ const App: React.FC = () => {
       <div className="w-full max-w-3xl">
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-[#001f3f] mb-2">Jazyková prax</h1>
-          <p className="text-gray-600 italic">Ber toto ako svoj jazykový trenažér🏃🏻 a zisti, či používas nové slová v správnom kontexte.</p>
+          <p className="text-gray-600 italic">Ber toto ako svoj jazykový trenažér🏃🏻 a zisti, či používaš nové slová v správnom kontexte.</p>
         </header>
 
         <main className="space-y-6">
