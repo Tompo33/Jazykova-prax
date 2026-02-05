@@ -2,14 +2,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { FeedbackResponse } from "./types";
 
-// Vo Vite prostredí pristupujeme k premenným cez import.meta.env
-const API_KEY = (import.meta as any).env.VITE_GEMINI_API_KEY || (process.env as any).API_KEY || "";
-
 export const getLanguageFeedback = async (
   targetWords: string,
   userSentences: string
 ): Promise<FeedbackResponse> => {
-  const ai = new GoogleGenAI({ apiKey: API_KEY });
+  // Use process.env.API_KEY directly as per senior engineer guidelines
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",

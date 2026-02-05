@@ -36,7 +36,7 @@ const App: React.FC = () => {
       <div className="w-full max-w-3xl">
         <header className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-[#001f3f] mb-2">Jazyková prax</h1>
-          <p className="text-gray-600">Ber toto ako svoj jazykový trenažér🏃🏻</p>
+          <p className="text-gray-600 italic">Ber toto ako svoj jazykový trenažér🏃🏻 a zisti, či používas nové slová v správnom kontexte.</p>
         </header>
 
         <main className="space-y-6">
@@ -83,7 +83,7 @@ const App: React.FC = () => {
                   Uvidíme!
                 </>
               ) : (
-                'Trafil som sa?'
+                'Znie to fajn?'
               )}
             </button>
 
