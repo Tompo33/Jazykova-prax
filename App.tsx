@@ -1,14 +1,19 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { getLanguageFeedback } from './geminiService';
 import { FeedbackResponse } from './types';
 
 const App: React.FC = () => {
+  const [isClient, setIsClient] = useState(false);
   const [targetWords, setTargetWords] = useState('');
   const [userSentences, setUserSentences] = useState('');
   const [feedback, setFeedback] = useState<FeedbackResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Ošetrenie hydratácie pre Vercel / SSR prostredia
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleProcess = useCallback(async () => {
     if (!targetWords.trim() || !userSentences.trim()) {
@@ -24,12 +29,22 @@ const App: React.FC = () => {
       const result = await getLanguageFeedback(targetWords, userSentences);
       setFeedback(result);
     } catch (err: any) {
-      console.error(err);
-      setError('Niekde sa stala chyba. Skús to prosím znova.');
+      console.error("Chyba pri volaní API:", err);
+      
+      const errorMessage = err?.message || "";
+      const status = err?.status || (errorMessage.includes("420") ? 420 : errorMessage.includes("429") ? 429 : null);
+
+      if (status === 420 || status === 429) {
+        setError('Gemini práve neodpovedá, skontroluj svoje internetové pripojenie alebo skús vetu skrátiť.');
+      } else {
+        setError('Niekde sa stala chyba. Skús to prosím znova.');
+      }
     } finally {
       setIsLoading(false);
     }
   }, [targetWords, userSentences]);
+
+  if (!isClient) return null;
 
   return (
     <div className="min-h-screen p-4 md:p-8 flex flex-col items-center">
@@ -88,7 +103,7 @@ const App: React.FC = () => {
             </button>
 
             {error && (
-              <p className="text-red-600 text-sm font-medium">{error}</p>
+              <p className="text-red-600 text-sm font-medium text-center max-w-md">{error}</p>
             )}
           </div>
 

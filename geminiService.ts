@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { FeedbackResponse } from "./types";
 
@@ -6,7 +5,8 @@ export const getLanguageFeedback = async (
   targetWords: string,
   userSentences: string
 ): Promise<FeedbackResponse> => {
-  // Use process.env.API_KEY directly as per senior engineer guidelines
+  // Use the API key exclusively from process.env.API_KEY as per guidelines.
+  // This fix addresses the 'Property env does not exist on type ImportMeta' error by removing Vite-specific environment access.
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const response = await ai.models.generateContent({
@@ -17,26 +17,13 @@ export const getLanguageFeedback = async (
     `,
     config: {
       systemInstruction: `
-        You are an encouraging and context-aware English tutor for the "Take Away English" brand.
-        The user wants to practice specific English vocabulary. 
-        Your primary focus MUST be on whether the words/phrases from the "Vocabulary to practice" field were used correctly in context within the provided sentences.
+        Si povzbudzujúca a kontextovo orientovaná lektorka angličtiny pre značku "Take Away English".
+        Používateľ si chce precvičiť slovnú zásobu. Tvojou úlohou je skontrolovať, či boli slová použité správne.
         
-        TONE AND LANGUAGE RULES:
-        - Provide all feedback in Slovak.
-        - Use an INFORMAL, SINGULAR tone (tykanie).
-        - Use FEMININE grammatical forms (e.g., "použila si", "napísala si", "tvoja veta").
-        - Be encouraging, like a friendly mentor.
-        
-        CONTENT RULES:
-        If Correct Context:
-        - Praise the usage.
-        - Explain why it was correct (e.g., "použila si to idiomaticky", "gramaticky správne", "významovo presné").
-        
-        If Incorrect Context:
-        - State clearly it was incorrect or awkward.
-        - Provide a suggestion: either a better word for that context or a reformulated sentence that correctly uses the target word.
-        - Explain why the original was wrong (e.g., "nesprávna kolokácia", "odlišný význam", "nevhodný register").
-        - Provide a clear contrast example.
+        PRAVIDLÁ TÓNU:
+        - Spätná väzba v slovenčine.
+        - Neformálne tykanie (SINGULÁR).
+        - Používaj ŽENSKÝ ROD (napr. "použila si", "napísala si").
         
         Return the result as a JSON object matching the defined schema.
       `,
@@ -44,10 +31,7 @@ export const getLanguageFeedback = async (
       responseSchema: {
         type: Type.OBJECT,
         properties: {
-          summary: { 
-            type: Type.STRING, 
-            description: "A short, encouraging summary of the student's attempt in Slovak (informal, feminine)." 
-          },
+          summary: { type: Type.STRING },
           corrections: {
             type: Type.ARRAY,
             items: {
@@ -56,10 +40,10 @@ export const getLanguageFeedback = async (
                 originalSentence: { type: Type.STRING },
                 wordPracticed: { type: Type.STRING },
                 isCorrect: { type: Type.BOOLEAN },
-                feedback: { type: Type.STRING, description: "Detailed feedback in Slovak (informal, feminine)." },
-                explanation: { type: Type.STRING, description: "Detailed linguistic explanation in Slovak (informal, feminine)." },
-                suggestion: { type: Type.STRING, description: "Improved version or alternative word." },
-                correctExample: { type: Type.STRING, description: "A separate example showing correct usage of the target word." }
+                feedback: { type: Type.STRING },
+                explanation: { type: Type.STRING },
+                suggestion: { type: Type.STRING },
+                correctExample: { type: Type.STRING }
               },
               required: ["originalSentence", "wordPracticed", "isCorrect", "feedback", "explanation"]
             }
@@ -72,7 +56,7 @@ export const getLanguageFeedback = async (
 
   const text = response.text;
   if (!text) {
-    throw new Error("No feedback received from the AI.");
+    throw new Error("No feedback received");
   }
 
   return JSON.parse(text) as FeedbackResponse;
