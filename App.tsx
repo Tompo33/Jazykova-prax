@@ -77,6 +77,31 @@ const App: React.FC = () => {
               />
             </div>
 
+            {/* YouGlish Odkaz (Video kontext a výslovnosť) - Presunuté sem */}
+            {activeWord && (
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 animate-fade-in flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <span className="text-xl mt-0.5">🔊</span>
+                  <div>
+                    <h2 className="text-sm font-bold text-[#001f3f]">Video kontext a výslovnosť</h2>
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                      Zisti, ako slovo <span className="text-blue-600 font-semibold">"{activeWord}"</span> vyslovujú rodení hovoriaci. 
+                      Tam klikaj na tmavomodrú šípku pre ďalšie príklady.
+                    </p>
+                  </div>
+                </div>
+                
+                <a 
+                  href={`https://youglish.com/pronounce/${encodeURIComponent(activeWord)}/english`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-white text-blue-700 text-sm font-semibold border border-blue-200 hover:bg-blue-50 transition-colors gap-2 whitespace-nowrap shadow-sm"
+                >
+                  Otvoriť YouGlish ↗
+                </a>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 🚀Tu ho použi vo vete:
@@ -90,7 +115,7 @@ const App: React.FC = () => {
               />
             </div>
 
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-4 pt-2">
               <button
                 onClick={handleProcess}
                 disabled={isLoading}
@@ -103,30 +128,6 @@ const App: React.FC = () => {
               {error && <p className="text-red-600 text-sm font-medium text-center">{error}</p>}
             </div>
           </section>
-
-          {/* YouGlish Odkaz (Video kontext a výslovnosť) */}
-          {activeWord && (
-            <section className="bg-white p-5 rounded-xl shadow-sm border border-gray-100 animate-fade-in flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🔊</span>
-                <div>
-                  <h2 className="text-md font-bold text-[#001f3f]">Video kontext a výslovnosť</h2>
-                  <p className="text-sm text-gray-500">
-                    Zisti, ako slovo <span className="text-blue-600 font-semibold">"{activeWord}"</span> vyslovujú rodení hovoriaci. Tam klikaj na tmavomodrú šípku pre ďalšie príklady.
-                  </p>
-                </div>
-              </div>
-              
-              <a 
-                href={`https://youglish.com/pronounce/${encodeURIComponent(activeWord)}/english`} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-blue-50 text-blue-700 font-semibold border border-blue-100 hover:bg-blue-100 transition-colors gap-2 whitespace-nowrap"
-              >
-                Otvoriť na YouGlish ↗
-              </a>
-            </section>
-          )}
 
           {/* Feedback Sekcia */}
           {feedback && (
